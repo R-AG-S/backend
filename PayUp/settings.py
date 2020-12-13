@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
 from pathlib import Path
+import os 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
@@ -25,7 +26,7 @@ SECRET_KEY = '$^qxz&^zrch-i^0w)$#4%&i-f@dl%2a65*qhg02a-inf+7ng%d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['payup-backend.herokuapp.com']
+ALLOWED_HOSTS = ['payup-backend.herokuapp.com', '127.0.0.1']
 
 
 # Application definition
@@ -75,6 +76,8 @@ MIDDLEWARE = [
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 ROOT_URLCONF = 'PayUp.urls'
 
