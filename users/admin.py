@@ -4,9 +4,9 @@ from .models import User
 # Register your models here.
 
 class UserModelAdmin(admin.ModelAdmin):
-	list_display = ["username"]          
+	list_display = ["username", "password"]           
 	
 	class Meta:                     
 		model = User
 
-admin.site.register(User, UserModelAdmin) 
+admin.site.register(User, UserModelAdmin)

@@ -18,7 +18,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-   path('carpool/', include('carpool.urls')),
+    path('carpool/', include('carpool.urls')),
+    path('users/', include('users.urls')),
     path('admin/', admin.site.urls),
 
     path('', schema_view.with_ui('swagger',
