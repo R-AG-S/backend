@@ -25,7 +25,7 @@ SECRET_KEY = '$^qxz&^zrch-i^0w)$#4%&i-f@dl%2a65*qhg02a-inf+7ng%d'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['payup-backend.herokuapp.com']
 
 
 # Application definition
