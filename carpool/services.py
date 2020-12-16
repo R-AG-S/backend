@@ -15,13 +15,13 @@ from users.services import initialise_user_table
 def add_room_to_user_data_table(room_id, user_id):
     try:
         time = datetime.now()  
-        user_ref = db.collection("User-Details").document(room_id)
+        user_ref = db.collection("User-Details").document(user_id)
 
         if not user_ref.get().exists:
-            user_ref = initialise_user_table(room_id)
+            user_ref = initialise_user_table(user_id)
 
         user_table = user_ref.get().to_dict()
-        room_data = {"name": user_id, "joined_on": time}
+        room_data = {room_id: {"room_id": room_id, "joined_on": time}}
         user_table["rooms"].append(room_data)
 
         user_ref.set(user_table)
@@ -44,14 +44,14 @@ def createroom(validated_data, user_id):
         time = datetime.now()
         room_name = validated_data['room_name']
         details = validated_data['details']
-        owner = user_id
+        member = user_id
         petrol_price = validated_data['petrol_price']
-        members = [{"name": owner, "joined_on": time}]
+        members = [ {member: {"user_id": member, "joined_on": time} } ]
     
         data = {
             "room_name": room_name,
             "details": details,
-            "owner": owner,
+            "owner": member,
             "petrol_price": petrol_price,
             "members": members,
             "created_on": time
@@ -77,16 +77,19 @@ def joinroom(room_id: str, user_id: str):
             raise Exception("ROOM_DOES_NOT_EXIST")
 
         time = datetime.now()    
-        member_add_data = {"name": user_id, "joined_on": time}
+        member_add_data = {user_id: {"name": user_id, "joined_on": time}}
 
         carpool_data = carpool_ref.get().to_dict()
-        carpool_data['members'].append(member_add_data)
+        if user_id not in carpool_data['members']:
+            carpool_data['members'].append(member_add_data)
+        else:
+            raise Exception("USER_ALREADY_PART_OF_ROOM")
 
         carpool_ref.set(carpool_data)
 
         add_room_to_user_data_table(room_id, user_id)
 
-        return "ROOM_JOINED"
+        return carpool_data
 
     except Exception as e:
-        return e
+        raise e

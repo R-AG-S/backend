@@ -13,6 +13,7 @@ def create_firebase_user(user):
                 display_name= user['full_name'],
                 disabled=False
             )
+            initialise_user_table(user['username'])
         except Exception as e:
             raise e
             

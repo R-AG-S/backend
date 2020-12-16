@@ -48,7 +48,7 @@ class RoomJoinView(GenericAPIView):
                 try: 
                     room_id = serialized.validated_data['room_id']
                     r = joinroom(room_id, user_id)
-                    return Response({"SUCCESS": r}, status=status.HTTP_200_OK)
+                    return Response({"Room_Data": r}, status=status.HTTP_200_OK)
                 except Exception as e:
                     return Response({'ERROR': type(e).__name__}, status=status.HTTP_404_NOT_FOUND)
             else:
