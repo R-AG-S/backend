@@ -40,8 +40,34 @@ def update_firebase_user(token_uid, data):
         raise e
     return user
 
-def set_addresss_user(token_uid, address):
+def set_car_of_user(token_uid, address):
 
     address_ref = db.collection('User-Details').document(token_uid).set(address)
     return address_ref
     
+
+
+def initialise_user_table(uid)-> str:
+    user_ref = db.collection('User-Details').document(uid)
+    user_data = {
+        "rooms": [],
+        "cars": [],
+        "address": [],  
+        # TODO: Add More fields when new features are added.
+    }
+    user_ref.set(user_data)
+
+    return user_ref
+
+
+
+# Public Functions
+
+def get_or_create_user_table(uid):
+    user_ref = db.collection('CP_ROOM').document(uid)
+    if not user_ref.get().exists:
+        user_ref = initialise_user_table(uid)
+
+    return user_ref
+
+        

@@ -10,7 +10,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Car Pool API",
         default_version='v1',
-        description="Car Pool App API",
+        description="Car Pool App API By S Sandeep Pillai \n Team ",
 
     ),
     public=True,

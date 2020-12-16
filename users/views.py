@@ -13,7 +13,7 @@ from .services import (
     create_firebase_user,
     firebase_custom_token_generator,
     update_firebase_user,
-    set_addresss_user
+    set_car_of_user
     )
 from .serializers import (
     UserSerializer, 
@@ -154,7 +154,7 @@ class SetAdditionalUserData(ApiErrorsMixin, GenericAPIView):
             address = self.serializer_class(request.data)
         
             try:
-                r = set_addresss_user(token_uid, address.data)
+                r = set_car_of_user(token_uid, address.data)
 
                 return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
             except:
