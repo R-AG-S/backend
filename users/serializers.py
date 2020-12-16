@@ -1,42 +1,27 @@
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from phonenumber_field.modelfields import PhoneNumberField
-from .models import User
+
 from django.db import models
 
-class UserSerializer(serializers.ModelSerializer):
 
+class UserSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(max_length=50)
+    username = serializers.CharField(max_length=50)
+    full_name = serializers.CharField(max_length=50)
+    phone_number = PhoneNumberField()
 
-    class Meta:
-        model = User 
-        fields = [              
-            "email",
-            "password",
-            "username",
-            "full_name",
-            "phone_number",
+class UserEditSerializer(serializers.Serializer):
 
-        ]
-
-
-
-class UserEditSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = User 
-        fields = [              
-            "full_name",
-            "email",
-            "phone_number",
-        ]
-
+    email = serializers.EmailField()
+    full_name = serializers.CharField(max_length=50)
+    phone_number = PhoneNumberField()
 
 class LoginInputSerializer(serializers.Serializer):
 
     email = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
     password = serializers.CharField()
-
-
 
 
 class TokenSerializer(serializers.Serializer):

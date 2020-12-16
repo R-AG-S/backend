@@ -52,6 +52,7 @@ def initialise_user_table(uid)-> str:
     user_ref = db.collection('User-Details').document(uid)
     user_data = {
         "rooms": [],
+        "rooms_created": [],
         "cars": [],
         "address": [],  
         # TODO: Add More fields when new features are added.

@@ -17,5 +17,5 @@ class RoomCreateSerializer(serializers.Serializer):
     details = serializers.CharField(max_length=144)
     petrol_price = serializers.FloatField(min_value=0)
     
-class RoomJoinSerializer(serializers.Serializer):
+class RoomIDSerializer(serializers.Serializer):
     room_id = serializers.CharField(max_length=10)
