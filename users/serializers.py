@@ -10,13 +10,13 @@ class UserSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=50)
     username = serializers.CharField(max_length=50)
     full_name = serializers.CharField(max_length=50)
-    phone_number = PhoneNumberField()
+    phone_number = serializers.CharField(max_length=15)
 
 class UserEditSerializer(serializers.Serializer):
 
     email = serializers.EmailField()
     full_name = serializers.CharField(max_length=50)
-    phone_number = PhoneNumberField()
+    phone_number = serializers.CharField(max_length=50)
 
 class LoginInputSerializer(serializers.Serializer):
 
