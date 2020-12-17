@@ -8,9 +8,10 @@ from django.contrib import admin
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Car Pool API",
-        default_version='v1',
-        description="Car Pool App API By S Sandeep Pillai \n Team ",
+        title="Pay Up Backend REST API",
+        default_version='Version 1.5',
+        description="Car Pool App API\n\n **By Team RAGS** \n\n~ Powered by django-rest-framework\n\n",
+        contact = openapi.Contact("Team Rags Team", "https://github.com/R-AG-S", "sandeep.pillai42@gmail.com")
 
     ),
     public=True,
