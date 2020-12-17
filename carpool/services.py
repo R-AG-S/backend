@@ -58,7 +58,7 @@ def createroom(validated_data, user_id):
             member = user_id
             petrol_price = validated_data['petrol_price']
             members = [ {"user_id": member, "joined_on": time}  ]
-        
+            
             data = {
                 "room_name": room_name,
                 "details": details,
@@ -75,7 +75,7 @@ def createroom(validated_data, user_id):
                     "MESSAGE": "Sorry, the room limit for your account has been reached."}
 
     except Exception as e:
-        return e
+        raise e
 
 
 
@@ -95,7 +95,7 @@ def joinroom(room_id: str, user_id: str):
         for members in carpool_data['members']:
             if user_id in members['user_id']:
                 raise Exception("USER_ALREADY_PART_OF_ROOM")
-            
+
         else:
                 carpool_data['members'].append(member_add_data)
                 carpool_ref.set(carpool_data)

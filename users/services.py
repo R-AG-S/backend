@@ -41,10 +41,55 @@ def update_firebase_user(token_uid, data):
         raise e
     return user
 
-def set_car_of_user(token_uid, address):
+def set_car_of_user(token_uid, car):
 
-    address_ref = db.collection('User-Details').document(token_uid).set(address)
-    return address_ref
+    car_ref = db.collection('User-Details').document(token_uid)
+
+    if not car_ref.get().exists:
+        car_ref = initialise_user_table(token_uid)
+    
+    user_details = car_ref.get().to_dict()
+    car_data = {
+        'car_model': car['car_model'],
+        'mileage': car['mileage']
+    }
+    user_details['cars'].append(car_data)
+
+    car_ref.set(user_details)
+
+    return car_ref
+
+def get_car_of_user(token_uid):
+
+    car_ref = db.collection('User-Details').document(token_uid)
+    if not car_ref.get().exists:
+        car_ref = initialise_user_table(token_uid)    
+    car_details = car_ref.get().to_dict()
+
+    return  {'cars': car_details['cars']}
+
+
+
+def delete_car_of_user(token_uid, car_model):
+
+    car_ref = db.collection('User-Details').document(token_uid)
+
+    if not car_ref.get().exists:
+        car_ref = initialise_user_table(token_uid)
+    
+    user_details = car_ref.get().to_dict()
+    flag = 0
+    for car in user_details['cars']:
+        if car['car_model'] == car_model:
+            user_details['cars'].remove(car)
+            flag = 1
+
+    if flag == 1:
+        car_ref.set(user_details)
+        return True
+    else:
+        return False
+    
     
 
 

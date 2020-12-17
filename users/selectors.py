@@ -67,11 +67,17 @@ def firebase_refresh_token(refreshToken: str):
     print(r)
     return r 
 
+def get_specific_details_of_user(token_uid, field='cars'):
 
-def get_additional_user_data(uid):
-
-    additional_user_data = db.collection('User-Details').document(uid).get()
-    return additional_user_data
+    user_ref = db.collection('User-Details').document(token_uid)
+    if not user_ref.get().exists:
+        raise Exception("USER_DOES_NOT_EXIST")  
+    user_details = user_ref.get().to_dict()
+    try:
+        data = {field: user_details[field]}
+        return data
+    except KeyError:
+        raise KeyError
 
 def getuserlist( ): # max_results -> how many users per function call. offset -> which page to paginate from,
 

@@ -47,20 +47,14 @@ class FireBaseUserSerializer(serializers.Serializer):
     likes = serializers.IntegerField()
 
 
-class AddressSerializer(serializers.Serializer):
-    
-    street_address = serializers.CharField()
-    city = serializers.CharField()
-    state = serializers.CharField()
-    pin = serializers.CharField()
-    phone_number = PhoneNumberField()
-    name = serializers.CharField()
 
-    # Define clean functions.
 
 class CustomerInfoSerializer(serializers.Serializer):
 
-    address = AddressSerializer(many=True)
+    car_model = serializers.CharField()
+    mileage = serializers.CharField()
+    
+
 
 
 class RefreshToken(serializers.Serializer):

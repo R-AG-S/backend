@@ -4,10 +4,11 @@
 from .selectors import (
     sign_in_with_email_and_password, 
     get_uid_from_token,
-    get_user_data_from_uid,
+    get_specific_details_of_user,
     obj_to_json,
-    get_additional_user_data,
-    firebase_refresh_token
+    get_specific_details_of_user,
+    firebase_refresh_token,
+    get_user_data_from_uid
     )
 from .services import (
     create_firebase_user,
@@ -120,28 +121,23 @@ class SetUserData(ApiErrorsMixin, GenericAPIView):
 
 
 
-class GetAdditionalUserData(ApiErrorsMixin, GenericAPIView):
-
+class GetUserCar(ApiErrorsMixin, GenericAPIView):
 
     def get(self, request):
-  
         token = get_token(request)
         token_uid = get_uid_from_token(token)
         if token_uid:
-            
             try:
-                r = get_additional_user_data(token_uid)
-                json_payload = obj_to_json(r)
-                return Response(json_payload, status=status.HTTP_200_OK)
-            except:
-                return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
+                r = get_specific_details_of_user(token_uid, 'cars')
+                return Response(r, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({ "Error": type(e).__name__ , "Message": str(e)}, status=status.HTTP_404_NOT_FOUND)
         
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)  
 
 
-
-class SetAdditionalUserData(ApiErrorsMixin, GenericAPIView):
+class SetUserCar(ApiErrorsMixin, GenericAPIView):
     
     serializer_class = CustomerInfoSerializer
 
@@ -151,10 +147,10 @@ class SetAdditionalUserData(ApiErrorsMixin, GenericAPIView):
         token_uid = get_uid_from_token(token)
         if token_uid:
             
-            address = self.serializer_class(request.data)
+            car = self.serializer_class(request.data)
         
             try:
-                r = set_car_of_user(token_uid, address.data)
+                r = set_car_of_user(token_uid, car.data)
 
                 return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
             except:
@@ -162,6 +158,7 @@ class SetAdditionalUserData(ApiErrorsMixin, GenericAPIView):
         
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
+
 
 
 class UserTokenRefresh(ApiErrorsMixin, GenericAPIView):
