@@ -1,0 +1,1 @@
+User_Details_Table = "User-Details"

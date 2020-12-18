@@ -10,7 +10,7 @@ class UserRegisterationSerializer(serializers.Serializer):
     password = serializers.CharField(max_length=50)
     username = serializers.CharField(max_length=50)
     full_name = serializers.CharField(max_length=50)
-    phone_number = serializers.CharField(max_length=15)
+    phone_number = serializers.CharField(max_length=15, default="+919562294521")
 
     auto_login = serializers.BooleanField(default=False)
 
@@ -18,7 +18,7 @@ class UserEditSerializer(serializers.Serializer):
 
     email = serializers.EmailField()
     full_name = serializers.CharField(max_length=50)
-    phone_number = serializers.CharField(max_length=50)
+    phone_number = serializers.CharField(max_length=50, default="+919562294521")
 
 class LoginInputSerializer(serializers.Serializer):
 
@@ -54,7 +54,7 @@ class FireBaseUserSerializer(serializers.Serializer):
 class CustomerInfoSerializer(serializers.Serializer):
 
     car_model = serializers.CharField()
-    mileage = serializers.CharField()
+    mileage = serializers.FloatField()
     
 
 
