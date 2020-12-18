@@ -17,7 +17,7 @@ from .services import (
     set_car_of_user
     )
 from .serializers import (
-    UserSerializer, 
+    UserRegisterationSerializer, 
     UserEditSerializer,
     LoginInputSerializer,
     RefreshToken,
@@ -39,16 +39,25 @@ from rest_framework.decorators import api_view
 
 class UserRegister(ApiErrorsMixin, GenericAPIView):
 
-    serializer_class = UserSerializer
+    serializer_class = UserRegisterationSerializer
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
 
         if serializer.is_valid():
-            user = serializer.data
+            userdata = serializer.data
             try:
-                user_firebase = create_firebase_user(user)
-                return Response({'SUCCESS': "USER_CREATED_SUCCESSFULLY"}, status=status.HTTP_201_CREATED)
+                user_firebase = create_firebase_user(userdata)
+                if userdata['auto_login']:
+                    response = sign_in_with_email_and_password(userdata['email'], userdata['password'])
+                    if response.status_code == 400:
+                        error_message = response.json()
+                        return Response(error_message, status=status.HTTP_401_UNAUTHORIZED)
+                    elif response.status_code == 200:
+                        token = response.json()
+                        return Response(token, status=status.HTTP_201_CREATED)
+                else:
+                    return Response({"SUCCESS": "USER_CREATED_SUCCESSFULLY"}, status=status.HTTP_201_CREATED)
 
             except Exception as e:
                 return Response({ "Error": type(e).__name__ , "Message": str(e)}, status=status.HTTP_409_CONFLICT)

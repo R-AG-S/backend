@@ -5,12 +5,14 @@ from phonenumber_field.modelfields import PhoneNumberField
 from django.db import models
 
 
-class UserSerializer(serializers.Serializer):
+class UserRegisterationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(max_length=50)
     username = serializers.CharField(max_length=50)
     full_name = serializers.CharField(max_length=50)
     phone_number = serializers.CharField(max_length=15)
+
+    auto_login = serializers.BooleanField(default=False)
 
 class UserEditSerializer(serializers.Serializer):
 
