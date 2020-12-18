@@ -26,7 +26,8 @@ def add_room_to_user_data_table(room_id, user_id, created=False):
             if len(user_table['rooms_created']) > Free_User_Create_Room_Limit:
                 return None      # Limit Reached 
 
-        room_data = {"room_id": room_id, "joined_on": time}
+        #room_data = {"room_id": room_id, "joined_on": time}
+        room_data = room_id
         user_table["rooms"].append(room_data)
         if created:
             user_table["rooms_created"].append(room_data)
@@ -57,7 +58,8 @@ def createroom(validated_data, user_id):
             details = validated_data['details']
             member = user_id
             petrol_price = validated_data['petrol_price']
-            members = [ {"user_id": member, "joined_on": time}  ]
+            #members = [ {"user_id": member, "joined_on": time}  ]
+            members = [ member ] 
             
             data = {
                 "room_name": room_name,
@@ -89,11 +91,12 @@ def joinroom(room_id: str, user_id: str):
             raise Exception("ROOM_DOES_NOT_EXIST")
 
         time = datetime.now()    
-        member_add_data = {"user_id": user_id, "joined_on": time}
+        #member_add_data = {"user_id": user_id, "joined_on": time}
+        member_add_data = user_id
 
         carpool_data = carpool_ref.get().to_dict()
         for members in carpool_data['members']:
-            if user_id in members['user_id']:
+            if user_id in members:
                 raise Exception("USER_ALREADY_PART_OF_ROOM")
 
         else:
@@ -104,3 +107,6 @@ def joinroom(room_id: str, user_id: str):
 
     except Exception as e:
         raise e
+
+
+

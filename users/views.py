@@ -31,9 +31,8 @@ from PayUp.utils import ApiErrorsMixin
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.decorators import api_view
+import json
 
-#from users.models import User
 
 
 
@@ -100,8 +99,8 @@ class GetUserData(ApiErrorsMixin, GenericAPIView):
         if user_id != None:
             firebase_user = get_user_data_from_uid(uid = user_id)
             if firebase_user != None:
-                json_payload = obj_to_json(firebase_user)
-                return Response(json_payload, status=status.HTTP_200_OK)
+                json_payload = json.loads(json.dumps(firebase_user.__dict__, indent=4))
+                return Response(json_payload['_data'], status=status.HTTP_200_OK)
             else:
                 return Response({"ERROR": "USER_DOES_NOT_EXIST"}, status=status.HTTP_404_NOT_FOUND)
         else:

@@ -1,3 +1,5 @@
+# Firebase Variables
+
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime
@@ -12,6 +14,8 @@ sign_in_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPas
 token_refresh_url = "https://securetoken.googleapis.com/v1/token"
 
 
+# Custom Helper Functions
+
 def unique_key_generator(key_len):
     # By Sandeep Pillai
     if key_len > 10:
@@ -23,7 +27,6 @@ def unique_key_generator(key_len):
     key_string = ""
     for index in range(0, len(time_string), 2):
         val = time_string[index:index+2]
-        print(val)
         key_string += chr(65 + int(val)%26)
 
 
