@@ -58,7 +58,10 @@ class CustomerInfoSerializer(serializers.Serializer):
     car_model = serializers.CharField()
     mileage = serializers.FloatField()
     
+class NameAndDPSerializer(serializers.Serializer):
 
+    displayname = serializers.CharField(min_length = 1, max_length = 25)
+    displaypic = serializers.CharField(required = False)
 
 
 class RefreshToken(serializers.Serializer):

@@ -11,12 +11,13 @@ from rest_framework.response import Response
 
 from .selectors import (firebase_refresh_token, get_specific_details_of_user,
                         get_uid_from_token, get_user_data_from_uid,
-                        obj_to_json, sign_in_with_email_and_password)
+                        obj_to_json, sign_in_with_email_and_password,
+                        get_all_details_of_user, get_name_and_profile_pic)
 from .serializers import (CustomerInfoSerializer, LoginInputSerializer,
                           RefreshToken, UserEditSerializer,
-                          UserRegisterationSerializer, UserIDSerializer)
+                          UserRegisterationSerializer, UserIDSerializer, NameAndDPSerializer)
 from .services import (create_firebase_user, firebase_custom_token_generator,
-                       set_car_of_user, update_firebase_user)
+                       set_car_of_user, update_firebase_user, set_name_and_dp_of_user)
 from .utils import get_token
 
 
@@ -89,6 +90,19 @@ class GetUserData(ApiErrorsMixin, GenericAPIView):
                 return Response({"ERROR": "USER_DOES_NOT_EXIST"}, status=status.HTTP_404_NOT_FOUND)
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
+
+
+class GetAnyUsersDisplayData(ApiErrorsMixin, GenericAPIView):
+    def get(self, request, user_id):
+        try:
+            print(user_id)
+            data = get_name_and_profile_pic(user_id)
+            print(data)
+            return Response(data, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"ERROR": str(e)}, status=status.HTTP_404_NOT_FOUND)
+
+
         
 
 
@@ -111,6 +125,45 @@ class SetUserData(ApiErrorsMixin, GenericAPIView):
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class GetUserExtraDetails(ApiErrorsMixin, GenericAPIView):
+
+    def post(self, request):
+        token = get_token(request)
+        token_uid = get_uid_from_token(token)
+        if token_uid:
+            try:
+                r = get_all_details_of_user(token_uid)
+                return Response(r, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({ "Error": type(e).__name__ , "Message": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        
+        else:
+            return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)  
+
+
+class SetNameAndPic(ApiErrorsMixin, GenericAPIView):
+    
+    serializer_class = NameAndDPSerializer
+
+    def post(self, request):
+  
+        token = get_token(request)
+        token_uid = get_uid_from_token(token)
+        if token_uid:
+            
+            car = self.serializer_class(request.data)
+        
+            try:
+                r = set_name_and_dp_of_user(token_uid, car.data)
+
+                return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
+            except:
+                return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
+        
+        else:
+            return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
 
 
 class GetUserCar(ApiErrorsMixin, GenericAPIView):

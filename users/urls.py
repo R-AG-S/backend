@@ -5,7 +5,10 @@ from .views import ( UserRegister,
                      SetUserData,
                      GetUserCar,
                      SetUserCar,
-                     UserTokenRefresh
+                     UserTokenRefresh,
+                     GetUserExtraDetails,
+                     GetAnyUsersDisplayData,
+                     SetNameAndPic
                    )
 
 
@@ -17,6 +20,11 @@ urlpatterns = [
     path('get_user_data/', GetUserData.as_view()),
     path('set_user_data/', SetUserData.as_view()),
     path('set_car_details/', SetUserCar.as_view()),
+    path('set_name_and_pic/', SetNameAndPic.as_view()),
     path('get_car_details/', GetUserCar.as_view()),
+    path('get_all_details/', GetUserExtraDetails.as_view()),
+
+    path('get_any_user_display_data/<str:user_id>', GetAnyUsersDisplayData.as_view()),
+    
  
 ]

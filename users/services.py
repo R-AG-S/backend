@@ -59,14 +59,19 @@ def set_car_of_user(token_uid, car):
 
     return car_ref
 
-def get_car_of_user(token_uid):
+
+def set_name_and_dp_of_user(token_uid, data):
 
     car_ref = db.collection('User-Details').document(token_uid)
-    if not car_ref.get().exists:
-        car_ref = initialise_user_table(token_uid)    
-    car_details = car_ref.get().to_dict()
 
-    return  {'cars': car_details['cars']}
+    if not car_ref.get().exists:
+        car_ref = initialise_user_table(token_uid)
+    user_details = car_ref.get().to_dict()
+    user_details['displayname'] = data['displayname']
+    user_details['displaypic'] =  data['displaypic']
+    car_ref.set(user_details)
+
+    return car_ref
 
 
 
@@ -93,13 +98,15 @@ def delete_car_of_user(token_uid, car_model):
     
 
 
-def initialise_user_table(uid)-> str:
+def initialise_user_table(uid, displayname="")-> str:
     user_ref = db.collection('User-Details').document(uid)
     user_data = {
         "rooms": [],
         "rooms_created": [],
         "cars": [],
         "address": [],  
+        "displayname": displayname,
+        "displaypic": ""
         # TODO: Add More fields when new features are added.
     }
     user_ref.set(user_data)

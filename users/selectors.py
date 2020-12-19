@@ -29,11 +29,10 @@ def get_uid_from_token(idToken: str)->str:      # User_Id or None
 def get_user_data_from_uid(uid: str):
     try:
         user = auth.get_user(uid)
-
     except:
         user = None
-
     return user
+
 
 
 
@@ -78,6 +77,37 @@ def get_specific_details_of_user(user_id, field='cars'):
         return data
     except KeyError:
         raise KeyError
+
+def get_all_details_of_user(user_id):
+
+    user_ref = db.collection('User-Details').document(user_id)
+    if not user_ref.get().exists:
+        raise Exception("USER_DOES_NOT_EXIST")  
+    user_details = user_ref.get().to_dict()
+    try:
+        
+        return user_details
+    except KeyError:
+        raise KeyError
+
+def get_name_and_profile_pic(user_id):
+
+    user_ref = db.collection('User-Details').document(user_id)
+    if not user_ref.get().exists:
+        raise Exception("USER_DOES_NOT_EXIST")  
+    user_details = user_ref.get().to_dict()
+    try:
+        
+        return {
+            "displayname": user_details['displayname'],
+            "displaypic": user_details['displaypic']
+        }
+    except KeyError:
+        return {
+            "displayname": "",
+            "displaypic": "",
+            "message": "Please set A full name for this account."
+        }
 
 def getuserlist( ): # max_results -> how many users per function call. offset -> which page to paginate from,
 
