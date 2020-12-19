@@ -8,13 +8,13 @@
 #     except Exception as e:
 #         raise e  
 from PayUp.firebase import db, unique_key_generator
-from datetime import datetime
+from django.utils import timezone
 from users.services import initialise_user_table
 from .models import Carpool_Table, Free_User_Create_Room_Limit
 
 def add_room_to_user_data_table(room_id, user_id, created=False):
     try:
-        time = datetime.now()  
+        time = timezone.now()  
         user_ref = db.collection("User-Details").document(user_id)
 
         if not user_ref.get().exists:
@@ -53,7 +53,7 @@ def createroom(validated_data, user_id):
         if add_room_to_user_data_table(room_id= carpool_ref.id, user_id = user_id, created= True):
         # Add to User Details. Check if User's Room Limit has exceeded. 
             
-            time = datetime.now()
+            time = timezone.now()
             room_name = validated_data['room_name']
             details = validated_data['details']
             member = user_id
@@ -90,7 +90,7 @@ def joinroom(room_id: str, user_id: str):
         if not carpool_ref.get().exists:
             raise Exception("ROOM_DOES_NOT_EXIST")
 
-        time = datetime.now()    
+        time = timezone.now()    
         #member_add_data = {"user_id": user_id, "joined_on": time}
         member_add_data = user_id
 

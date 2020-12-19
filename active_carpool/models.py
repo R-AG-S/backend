@@ -1,3 +1,1 @@
-from django.db import models
-
-# Create your models here.
+ACTIVE_CARPOOL_TABLE = 'Active-Sessions'

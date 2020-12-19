@@ -7,7 +7,9 @@ if not firebase_admin._apps:
     cred = credentials.Certificate("./firebasekey.json")
     firebase_admin.initialize_app(cred)
 
+GeoPoint = firestore.GeoPoint
 db = firestore.client()
+
 
 
 sign_in_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword"

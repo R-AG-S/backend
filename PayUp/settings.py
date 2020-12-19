@@ -47,6 +47,7 @@ INSTALLED_APPS = [
 
     'users',
     'carpool',
+    'active_carpool',
 ]
 
 SWAGGER_SETTINGS = {
