@@ -1,8 +1,7 @@
+from django.db import models
+from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from phonenumber_field.modelfields import PhoneNumberField
-
-from django.db import models
 
 
 class UserRegisterationSerializer(serializers.Serializer):
@@ -27,8 +26,11 @@ class LoginInputSerializer(serializers.Serializer):
 
 
 class TokenSerializer(serializers.Serializer):
-
     Token = serializers.CharField() 
+    #TODO Clean
+
+class UserIDSerializer(serializers.Serializer):
+    user_id = serializers.CharField() 
     #TODO Clean
 
 

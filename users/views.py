@@ -1,39 +1,23 @@
 """
         NOTE: REFER TO  viewsAPITable.txt for API response table and documentation.
 """
-from .selectors import (
-    sign_in_with_email_and_password, 
-    get_uid_from_token,
-    get_specific_details_of_user,
-    obj_to_json,
-    get_specific_details_of_user,
-    firebase_refresh_token,
-    get_user_data_from_uid
-    )
-from .services import (
-    create_firebase_user,
-    firebase_custom_token_generator,
-    update_firebase_user,
-    set_car_of_user
-    )
-from .serializers import (
-    UserRegisterationSerializer, 
-    UserEditSerializer,
-    LoginInputSerializer,
-    RefreshToken,
-    CustomerInfoSerializer,
-    )
-
-from .utils import get_token
-from PayUp.responses import POST_REQUEST_ERRORS
-
-from PayUp.utils import ApiErrorsMixin
-from rest_framework.generics import GenericAPIView
-from rest_framework.response import Response
-from rest_framework import status
 import json
 
+from PayUp.responses import POST_REQUEST_ERRORS
+from PayUp.utils import ApiErrorsMixin
+from rest_framework import status
+from rest_framework.generics import GenericAPIView
+from rest_framework.response import Response
 
+from .selectors import (firebase_refresh_token, get_specific_details_of_user,
+                        get_uid_from_token, get_user_data_from_uid,
+                        obj_to_json, sign_in_with_email_and_password)
+from .serializers import (CustomerInfoSerializer, LoginInputSerializer,
+                          RefreshToken, UserEditSerializer,
+                          UserRegisterationSerializer, UserIDSerializer)
+from .services import (create_firebase_user, firebase_custom_token_generator,
+                       set_car_of_user, update_firebase_user)
+from .utils import get_token
 
 
 class UserRegister(ApiErrorsMixin, GenericAPIView):
@@ -130,13 +114,14 @@ class SetUserData(ApiErrorsMixin, GenericAPIView):
 
 
 class GetUserCar(ApiErrorsMixin, GenericAPIView):
-
-    def get(self, request):
-        token = get_token(request)
-        token_uid = get_uid_from_token(token)
-        if token_uid:
+    serializer_class = UserIDSerializer
+    def post(self, request):
+        #token = get_token(request)
+        #token_uid = get_uid_from_token(token)
+        if True:
+            data = self.serializer_class(request.data) 
             try:
-                r = get_specific_details_of_user(token_uid, 'cars')
+                r = get_specific_details_of_user(data.data['user_id'], 'cars')
                 return Response(r, status=status.HTTP_200_OK)
             except Exception as e:
                 return Response({ "Error": type(e).__name__ , "Message": str(e)}, status=status.HTTP_404_NOT_FOUND)

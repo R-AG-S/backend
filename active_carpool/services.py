@@ -1,8 +1,10 @@
-from PayUp.firebase import db, GeoPoint
-from .models import ACTIVE_CARPOOL_TABLE
 from carpool.models import Carpool_Table
 from django.utils import timezone
+from PayUp.firebase import GeoPoint, db
+
+from .models import ACTIVE_CARPOOL_TABLE, INACTIVE_SESSIONS_TABLE, init_inactive_table
 from .serializers import active_session_parser
+
 
 def get_active_room_if_room_valid(room_id, user_id, active_check=False, must_exist=False):
     carpool_ref = db.collection(Carpool_Table).document(room_id).get()
@@ -85,8 +87,100 @@ def join_active_session(data, user_id):
 
 
 
+def leave_active_session(data, user_id):
+    
+    room_id = data['room_id']
+    lat = data['lat']
+    lng = data['lng']
 
+    active_room_ref = get_active_room_if_room_valid(room_id, user_id, must_exist=True)
+    
+    session_data = active_room_ref.get().to_dict()
+    if user_id not in session_data['passengers_in_car']:
+        raise Exception("USER_IS_NOT_PART_OF_SESSION")
+    leave_time = timezone.now() 
+    pickup_data = {
+        user_id:
+            {
+                'coordinates': GeoPoint(lat, lng),
+                'time': leave_time
+            }   
+    }
+
+    session_data['passenger_dropoff_details'].append(pickup_data)
+    session_data['passengers_in_car'].remove(user_id)
+    session_data['dropped_of_passengers'].append(user_id)
+
+    active_room_ref.set(session_data)
+
+    #active_session_join_notification(session_data)
+
+    return {"SUCCESS": "ACTIVE_SESSION_LEFT", "SESSION_DETAILS": active_session_parser(session_data)}
     
 
     
 
+def end_active_session(data, user_id):
+    
+    room_id = data['room_id']
+    lat = data['lat']
+    lng = data['lng']
+    distance = data['distance']
+
+    active_room_ref = get_active_room_if_room_valid(room_id, user_id, must_exist=True)
+    end_time = timezone.now() 
+    session_data = active_room_ref.get().to_dict()
+
+    if user_id in session_data['driver']:
+
+        inactive_ref = db.collection(INACTIVE_SESSIONS_TABLE).document(room_id)
+        session_data['end_time'] = end_time
+        session_data['distance'] = distance
+        session_data['final_coordinates'] = GeoPoint(lat, lng)
+        session_data['participants_list'] = (session_data['passengers_in_car'] 
+                    + session_data['dropped_of_passengers'] + [session_data['driver']])
+        
+        session_data['cost_split'] = []
+
+        # Cleaning up data.
+        for passenger in session_data['passengers_in_car']:
+            session_data['passenger_dropoff_details'].append({
+                    passenger:{
+                            'coordinates': GeoPoint(lat, lng),
+                            'time': end_time
+                        } 
+            })
+
+
+        session_data.pop('passengers_in_car')
+        session_data.pop('dropped_of_passengers')
+        # End Cleaning up data.
+        if inactive_ref.get().exists:
+            inactive_session = inactive_ref.get().to_dict()
+        else: 
+            inactive_session = init_inactive_table()
+
+        inactive_session['session_count'] = str(int(inactive_session['session_count']) + 1)
+        inactive_session['history'].append(session_data)
+        inactive_session['last_session'] = end_time
+
+
+        inactive_ref.set(inactive_session)
+        active_room_ref.delete()
+
+        #active_session_end_notification(session_data)
+        parsed_data = active_session_parser(session_data)
+        parsed_data['final_coordinates'] = [
+            parsed_data['final_coordinates'].latitude,
+            parsed_data['final_coordinates'].longitude,
+        ]
+        print(parsed_data)
+
+        # TODO:
+        # active_session_end_notification(parsed_data)
+        # calculate_costs(parsed_data)
+
+        return {"SUCCESS": "ACTIVE_SESSION_ENDED", "SESSION_DETAILS": parsed_data}
+    
+    else:
+        raise Exception("FORBIDDEN_ONLY_DRIVER_CAN_END_SESSION")

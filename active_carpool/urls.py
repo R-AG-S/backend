@@ -1,9 +1,13 @@
 from django.conf.urls import url
-from .views import ( StartActiveSession, JoinActiveSession, GetActiveSessionData )
-from django.urls import path, include
+from django.urls import include, path
+
+from .views import (EndActiveSession, GetActiveSessionData, JoinActiveSession,
+                    StartActiveSession, LeaveActiveSession)
 
 urlpatterns = [
    path('start_drive', StartActiveSession.as_view(), name= "Start an Active Carpool Session"),
    path('join_drive', JoinActiveSession.as_view(), name= "Join an Active Carpool Session"),
-   path('active_session_data', GetActiveSessionData.as_view(), name= "Get data of an Active Carpool Session"),
+   path('get_drive_data', GetActiveSessionData.as_view(), name= "Get data of an Active Carpool Session"),
+   path('leave_drive', LeaveActiveSession.as_view(), name= "Leave an Active Carpool Session"),
+   path('end_drive', EndActiveSession.as_view(), name= "End an Active Carpool Session"),
 ]

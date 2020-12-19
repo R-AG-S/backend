@@ -1,6 +1,8 @@
-from rest_framework import serializers
-from PayUp.general_values import ROOM_ID_LENGTH
 from copy import copy
+
+from PayUp.general_values import ROOM_ID_LENGTH
+from rest_framework import serializers
+
 
 class CreateActiveSessionSerializer(serializers.Serializer):
 
@@ -10,11 +12,18 @@ class CreateActiveSessionSerializer(serializers.Serializer):
     car = serializers.CharField(max_length=100)
 
 
-class JoinActiveSessionSerializer(serializers.Serializer):
+class InteractActiveSessionSerializer(serializers.Serializer):
 
     room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
     lat = serializers.FloatField()
     lng = serializers.FloatField()
+
+class EndSessionSerializer(serializers.Serializer):
+    room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
+    lat = serializers.FloatField()
+    lng = serializers.FloatField()
+    distance = serializers.FloatField()
+
 
     
 
@@ -41,13 +50,23 @@ def active_session_parser(session_data):
     parsed_data['passenger_pickup_details'] = []
     parsed_data['initial_coordinates'] = []
     try:
+        
 
         parsed_data['initial_coordinates'] = [
             session_data['initial_coordinates'].latitude,
             session_data['initial_coordinates'].longitude
         ]
-        parsed_data['passenger_dropoff_details'] = detail_parser(session_data['passenger_dropoff_details'])
-        parsed_data['passenger_pickup_details'] = detail_parser(session_data['passenger_pickup_details'])
+
+        if 'passenger_dropoff_details' in session_data:
+            parsed_data['initial_coordinates'] = [
+                session_data['initial_coordinates'].latitude,
+                session_data['initial_coordinates'].longitude
+            ]
+        if 'passenger_dropoff_details' in parsed_data:
+            parsed_data['passenger_dropoff_details'] = detail_parser(session_data['passenger_dropoff_details'])
+        if 'passenger_pickup_details' in parsed_data:
+            parsed_data['passenger_pickup_details'] = detail_parser(session_data['passenger_pickup_details'])
+
 
     except Exception as e:
         print("ERROR " + str(e))

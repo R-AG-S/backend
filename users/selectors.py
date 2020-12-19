@@ -67,9 +67,9 @@ def firebase_refresh_token(refreshToken: str):
     print(r)
     return r 
 
-def get_specific_details_of_user(token_uid, field='cars'):
+def get_specific_details_of_user(user_id, field='cars'):
 
-    user_ref = db.collection('User-Details').document(token_uid)
+    user_ref = db.collection('User-Details').document(user_id)
     if not user_ref.get().exists:
         raise Exception("USER_DOES_NOT_EXIST")  
     user_details = user_ref.get().to_dict()
