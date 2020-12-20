@@ -24,7 +24,7 @@ class LoginInputSerializer(serializers.Serializer):
 
     email = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
     password = serializers.CharField()
-    device_registeration_token = serializers.CharField(max_length=50, required = False)
+    device_registeration_token = serializers.CharField(max_length=200, required = False)
 
 
 class TokenSerializer(serializers.Serializer):
