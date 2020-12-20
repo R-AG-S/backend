@@ -99,8 +99,8 @@ def get_display_details(user_id):
 
     if 'privacy' in user_details and user_details['privacy']:
         return {
-            "displayname": "",
-            "displaypic": "",
+            "displayname": user_details['displayname'],
+            "displaypic": user_details['displaypic'],
             "cars": [],
             "message": "User has set their profile to private."
         }

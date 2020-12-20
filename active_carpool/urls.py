@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.urls import include, path
 
 from .views import (EndActiveSession, GetActiveSessionData, JoinActiveSession,
-                    StartActiveSession, LeaveActiveSession)
+                    StartActiveSession, LeaveActiveSession, TestView)
 
 urlpatterns = [
    path('start_drive', StartActiveSession.as_view(), name= "Start an Active Carpool Session"),
@@ -10,4 +10,6 @@ urlpatterns = [
    path('get_drive_data', GetActiveSessionData.as_view(), name= "Get data of an Active Carpool Session"),
    path('leave_drive', LeaveActiveSession.as_view(), name= "Leave an Active Carpool Session"),
    path('end_drive', EndActiveSession.as_view(), name= "End an Active Carpool Session"),
+
+   path('debug', TestView.as_view(), name= "Testing Ping"),
 ]

@@ -26,6 +26,8 @@ class EndSessionSerializer(serializers.Serializer):
 
     cancel_session = serializers.BooleanField(required=False, default=False)
 
+class TestSerializer(serializers.Serializer):
+    room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
 
     
 

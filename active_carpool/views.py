@@ -9,9 +9,10 @@ from users.utils import get_token
 from .selectors import get_active_session_data
 from .serializers import (CreateActiveSessionSerializer,
                           InteractActiveSessionSerializer,
-                          EndSessionSerializer)
+                          EndSessionSerializer, TestSerializer)
 from .services import ( join_active_session, start_active_session, end_active_session, leave_active_session )
 
+from .utils import start_drive_notif
 
 class StartActiveSession(GenericAPIView):
     
@@ -121,3 +122,25 @@ class EndActiveSession(GenericAPIView):
 
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_401_UNAUTHORIZED)
+
+
+
+
+
+class TestView(GenericAPIView):
+    
+    serializer_class = RoomIDSerializer
+
+    def post(self, request, *args, **kwargs):
+
+        serialized = self.serializer_class(data=request.data)
+        if serialized.is_valid():
+            try:
+                data = serialized.validated_data
+                r = start_drive_notif(**data)
+                return Response(r, status=status.HTTP_200_OK)
+            except Exception as e:
+                return Response({'ERROR': type(e).__name__.upper(), "MESSAGE": str(e)}, status=status.HTTP_404_NOT_FOUND)
+        else:
+            return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+

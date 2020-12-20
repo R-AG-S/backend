@@ -38,6 +38,7 @@ def start_drive_notif(room_id, driver_uid="Driver"):
 
     for doc in docs:
         user_details = doc.to_dict()
+        print("->", user_details['displayname'])
         if 'device_notif_token' in user_details:
             token_list.append(user_details['device_notif_token'])
         # TODO: Remove Driver from this.
@@ -46,8 +47,13 @@ def start_drive_notif(room_id, driver_uid="Driver"):
         
         resp = fcm_bulk_notification(token_list, message)
         print(resp.success_count)
+        return {"SUCCESS": "Devices Reached: " + str(resp.success_count), "MESSAGE": message}
     else:
-        print("Token List is Empty for Room " + room_id)
+        print("Token List is Empty for Room " + str(room_id))
+        return {"ERROR": "Token List is Empty for Room " + str(room_id)}
+
+
+    
 
 
     
