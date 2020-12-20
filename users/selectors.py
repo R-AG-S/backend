@@ -90,7 +90,7 @@ def get_all_details_of_user(user_id):
     except KeyError:
         raise KeyError
 
-def get_name_and_profile_pic(user_id):
+def get_display_details(user_id):
 
     user_ref = db.collection('User-Details').document(user_id)
     if not user_ref.get().exists:
@@ -100,7 +100,8 @@ def get_name_and_profile_pic(user_id):
         
         return {
             "displayname": user_details['displayname'],
-            "displaypic": user_details['displaypic']
+            "displaypic": user_details['displaypic'],
+            "cars": user_details['cars']
         }
     except KeyError:
         return {
@@ -109,7 +110,20 @@ def get_name_and_profile_pic(user_id):
             "message": "Please set A full name for this account."
         }
 
-def getuserlist( ): # max_results -> how many users per function call. offset -> which page to paginate from,
+def get_car_mileage_by_model(token_uid, car_model):
+
+    car_ref = db.collection('User-Details').document(token_uid)
+    if not car_ref.get().exists:
+        raise Exception("USER_DOES_NOT_EXIST")
+    user_details = car_ref.get().to_dict()
+    for car in user_details['cars']:
+        if car['car_model'] == car_model:
+            mileage = car['mileage']
+            return mileage
+    return None
+
+
+def getuserlist( ): 
 
     page = auth.list_users()
     user_id_list = []

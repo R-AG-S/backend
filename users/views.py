@@ -12,12 +12,13 @@ from rest_framework.response import Response
 from .selectors import (firebase_refresh_token, get_specific_details_of_user,
                         get_uid_from_token, get_user_data_from_uid,
                         obj_to_json, sign_in_with_email_and_password,
-                        get_all_details_of_user, get_name_and_profile_pic)
+                        get_all_details_of_user, get_display_details)
 from .serializers import (CustomerInfoSerializer, LoginInputSerializer,
                           RefreshToken, UserEditSerializer,
                           UserRegisterationSerializer, UserIDSerializer, NameAndDPSerializer)
 from .services import (create_firebase_user, firebase_custom_token_generator,
-                       set_car_of_user, update_firebase_user, set_name_and_dp_of_user)
+                       set_car_of_user, set_name_and_dp_of_user, update_firebase_user, delete_car_of_user,
+                        delete_car_of_user, add_device_token_to_user_table)
 from .utils import get_token
 
 
@@ -39,6 +40,8 @@ class UserRegister(ApiErrorsMixin, GenericAPIView):
                         return Response(error_message, status=status.HTTP_401_UNAUTHORIZED)
                     elif response.status_code == 200:
                         token = response.json()
+                        if 'device_registeration_token' in userdata:
+                            token['user_data']= add_device_token_to_user_table(userdata['device_registeration_token'], token['localId'])
                         return Response(token, status=status.HTTP_201_CREATED)
                 else:
                     return Response({"SUCCESS": "USER_CREATED_SUCCESSFULLY"}, status=status.HTTP_201_CREATED)
@@ -58,14 +61,17 @@ class UserLogin(ApiErrorsMixin, GenericAPIView):
         email_pass = self.serializer_class(data=request.data)
 
         if email_pass.is_valid():
-
-            response = sign_in_with_email_and_password(**email_pass.data)
+            userdata = email_pass.validated_data
+            response = sign_in_with_email_and_password(userdata['email'], userdata['password'])
         
             if response.status_code == 400:
                 error_message = response.json()
                 return Response(error_message, status=status.HTTP_401_UNAUTHORIZED)
             elif response.status_code == 200:
+                user_table = {}
                 token = response.json()
+                if 'device_registeration_token' in userdata:
+                    token['user_data']= add_device_token_to_user_table(userdata['device_registeration_token'], token['localId'])
                 return Response(token, status=status.HTTP_200_OK)
             else:
                 return Response({"ERROR": "FIREBASE_ERROR: "+  response.status_code}, status=status.HTTP_404_NOT_FOUND)
@@ -96,7 +102,7 @@ class GetAnyUsersDisplayData(ApiErrorsMixin, GenericAPIView):
     def get(self, request, user_id):
         try:
             print(user_id)
-            data = get_name_and_profile_pic(user_id)
+            data = get_display_details(user_id)
             print(data)
             return Response(data, status=status.HTTP_200_OK)
         except Exception as e:
@@ -148,20 +154,15 @@ class SetNameAndPic(ApiErrorsMixin, GenericAPIView):
     serializer_class = NameAndDPSerializer
 
     def post(self, request):
-  
         token = get_token(request)
         token_uid = get_uid_from_token(token)
         if token_uid:
-            
             car = self.serializer_class(request.data)
-        
             try:
                 r = set_name_and_dp_of_user(token_uid, car.data)
-
                 return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
             except:
                 return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
-        
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
 
@@ -197,6 +198,28 @@ class SetUserCar(ApiErrorsMixin, GenericAPIView):
         
             try:
                 r = set_car_of_user(token_uid, car.data)
+
+                return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
+            except:
+                return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
+        
+        else:
+            return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
+
+class DeleteUserCar(ApiErrorsMixin, GenericAPIView):
+    
+    serializer_class = CustomerInfoSerializer
+
+    def post(self, request):
+  
+        token = get_token(request)
+        token_uid = get_uid_from_token(token)
+        if token_uid:
+            
+            car = self.serializer_class(request.data)
+        
+            try:
+                r = delete_car_of_user(token_uid, car.data)
 
                 return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
             except:

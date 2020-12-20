@@ -3,17 +3,19 @@ from .firebase_auth import *
 from PayUp.firebase import db
 
 def create_firebase_user(user):
+
+        full_name = user['full_name'] or user['username']
         try:
             user_firebase = auth.create_user(
                 uid=user['username'],
                 email= user['email'],
                 email_verified=False,
                 password=user['password'],
-                phone_number=user['phone_number'],
-                display_name= user['full_name'],
+                phone_number=user['phone_number'] or None,
+                display_name= full_name,
                 disabled=False
             )
-            initialise_user_table(user['username'])
+            initialise_user_table(user['username'], displayname=full_name )               
         except Exception as e:
             raise e
             
@@ -97,8 +99,26 @@ def delete_car_of_user(token_uid, car_model):
     
     
 
+def add_device_token_to_user_table(reg_token, token_uid):
 
-def initialise_user_table(uid, displayname="")-> str:
+    user_ref = db.collection('User-Details').document(token_uid)
+    user_query = user_ref.get()
+    if not user_query.exists:
+        user_ref = initialise_user_table(token_uid)
+
+    user_details = user_query.to_dict()
+
+    user_details['device_notif_token'] = reg_token
+
+    user_ref.set(user_details)
+
+    return user_details
+
+
+
+# Public Functions
+
+def initialise_user_table(uid, displayname="", displaypic=""):
     user_ref = db.collection('User-Details').document(uid)
     user_data = {
         "rooms": [],
@@ -106,16 +126,12 @@ def initialise_user_table(uid, displayname="")-> str:
         "cars": [],
         "address": [],  
         "displayname": displayname,
-        "displaypic": ""
+        "displaypic": displaypic
         # TODO: Add More fields when new features are added.
     }
     user_ref.set(user_data)
 
-    return user_ref
-
-
-
-# Public Functions
+    return user_ref 
 
 def get_or_create_user_table(uid):
     user_ref = db.collection('CP_ROOM').document(uid)

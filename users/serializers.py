@@ -8,10 +8,11 @@ class UserRegisterationSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField(max_length=50)
     username = serializers.CharField(max_length=50)
-    full_name = serializers.CharField(max_length=50)
-    phone_number = serializers.CharField(max_length=15, default="+919562294521")
+    full_name = serializers.CharField(max_length=50, default=None, required=False)
+    phone_number = serializers.CharField(max_length=15, default=None, required=False)
 
     auto_login = serializers.BooleanField(default=False)
+    device_registeration_token = serializers.CharField(max_length=200,  required = False)
 
 class UserEditSerializer(serializers.Serializer):
 
@@ -23,6 +24,7 @@ class LoginInputSerializer(serializers.Serializer):
 
     email = serializers.EmailField(max_length=None, min_length=None, allow_blank=False)
     password = serializers.CharField()
+    device_registeration_token = serializers.CharField(max_length=50, required = False)
 
 
 class TokenSerializer(serializers.Serializer):
@@ -57,7 +59,12 @@ class CustomerInfoSerializer(serializers.Serializer):
 
     car_model = serializers.CharField()
     mileage = serializers.FloatField()
+
+class DeleteCarSerializer(serializers.Serializer):
+    car_model = serializers.CharField()
+
     
+
 class NameAndDPSerializer(serializers.Serializer):
 
     displayname = serializers.CharField(min_length = 1, max_length = 25)
