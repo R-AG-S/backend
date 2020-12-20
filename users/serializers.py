@@ -67,8 +67,8 @@ class DeleteCarSerializer(serializers.Serializer):
 
 class NameAndDPSerializer(serializers.Serializer):
 
-    displayname = serializers.CharField(min_length = 1, max_length = 25)
-    displaypic = serializers.CharField(required = False)
+    displayname = serializers.CharField(min_length = 1, max_length = 25, required=False, default=None)
+    displaypic = serializers.CharField(required = False, default=None)
 
 
 class RefreshToken(serializers.Serializer):

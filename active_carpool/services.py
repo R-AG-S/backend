@@ -47,7 +47,7 @@ def start_active_session(data, user_id):
     }
     active_room_ref.set(set_data)
 
-    #active_session_start_notification(session_data)
+    #active_session_start_notification(room_id, user_id)
 
     return {"SUCCESS": "ACTIVE_SESSION_STARTED"}
 
@@ -80,8 +80,8 @@ def join_active_session(data, user_id):
 
 
     active_room_ref.set(session_data)
-
-    #active_session_join_notification(session_data)
+    #try:
+        #active_session_join_notification(session_data)
 
     return {"SUCCESS": "ACTIVE_SESSION_JOINED", "SESSION_DETAILS": active_session_parser(session_data)}
 
@@ -174,7 +174,7 @@ def end_active_session(data, user_id):
             parsed_data['final_coordinates'].latitude,
             parsed_data['final_coordinates'].longitude,
         ]
-        print(parsed_data)
+    
 
         # TODO:
         # active_session_end_notification(parsed_data)

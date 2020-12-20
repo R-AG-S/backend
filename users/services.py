@@ -64,16 +64,22 @@ def set_car_of_user(token_uid, car):
 
 def set_name_and_dp_of_user(token_uid, data):
 
-    car_ref = db.collection('User-Details').document(token_uid)
+    if data:
+        car_ref = db.collection('User-Details').document(token_uid)
 
-    if not car_ref.get().exists:
-        car_ref = initialise_user_table(token_uid)
-    user_details = car_ref.get().to_dict()
-    user_details['displayname'] = data['displayname']
-    user_details['displaypic'] =  data['displaypic']
-    car_ref.set(user_details)
+        if not car_ref.get().exists:
+            car_ref = initialise_user_table(token_uid)
+        user_details = car_ref.get().to_dict()
+        print(data)
+        if data['displayname']:
+            user_details['displayname'] = data['displayname']
+        if data['displaypic']:
+            user_details['displaypic'] =  data['displaypic']
+        car_ref.set(user_details)
 
-    return car_ref
+        return user_details
+    else:
+        return None
 
 
 

@@ -2,7 +2,7 @@ from PayUp.firebase import db, unique_key_generator
 from django.utils import timezone
 from users.services import initialise_user_table
 from .models import Carpool_Table, Free_User_Create_Room_Limit
-from active_carpool.models import INACTIVE_SESSIONS_TABLE
+from active_carpool.models import INACTIVE_SESSIONS_TABLE, init_inactive_table
 
 def add_room_to_user_data_table(room_id, user_id, created=False):
     try:
@@ -64,12 +64,7 @@ def createroom(validated_data, user_id):
             carpool_ref.set(data)
 
             inactive_table = db.collection(INACTIVE_SESSIONS_TABLE).document(carpool_ref.id)
-            inactive_init_data = {
-                'session_count': 0,
-                'history': [],
-                'last_session': "",
-                "distance_travelled_split": []
-            }
+            inactive_init_data = init_inactive_table()
 
             return {"ROOM_ID": carpool_ref.id, "DATA": data} 
         else:

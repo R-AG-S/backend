@@ -152,12 +152,15 @@ class SetNameAndPic(ApiErrorsMixin, GenericAPIView):
         token = get_token(request)
         token_uid = get_uid_from_token(token)
         if token_uid:
-            car = self.serializer_class(request.data)
-            try:
-                r = set_name_and_dp_of_user(token_uid, car.data)
-                return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
-            except:
-                return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
+            serialized = self.serializer_class(data=request.data)
+            if serialized.is_valid():
+                data = serialized.validated_data
+                try:
+                    set_name_and_dp_of_user(token_uid, data)
+                    return Response({"SUCCESSFUL": "USER_DATA_SET"}, status=status.HTTP_201_CREATED)
+                except:
+                    return Response(POST_REQUEST_ERRORS['DATABASE_TIMED_OUT'], status=status.HTTP_404_NOT_FOUND)
+            return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_400_BAD_REQUEST)
 

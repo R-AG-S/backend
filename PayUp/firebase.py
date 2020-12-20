@@ -1,7 +1,7 @@
 # Firebase Variables
 
 import firebase_admin
-from firebase_admin import credentials, firestore
+from firebase_admin import credentials, firestore, messaging
 from datetime import datetime
 if not firebase_admin._apps:
     cred = credentials.Certificate("./firebasekey.json")

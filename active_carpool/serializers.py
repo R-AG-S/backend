@@ -24,6 +24,8 @@ class EndSessionSerializer(serializers.Serializer):
     lng = serializers.FloatField()
     distance = serializers.FloatField()
 
+    cancel_session = serializers.BooleanField(required=False, default=False)
+
 
     
 
