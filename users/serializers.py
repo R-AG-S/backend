@@ -11,8 +11,8 @@ class UserRegisterationSerializer(serializers.Serializer):
     full_name = serializers.CharField(max_length=50, default=None, required=False)
     phone_number = serializers.CharField(max_length=15, default=None, required=False)
 
-    auto_login = serializers.BooleanField(default=False)
-    device_registeration_token = serializers.CharField(max_length=200,  required = False)
+    auto_login = serializers.BooleanField(default=False, required=False)
+    device_registeration_token = serializers.CharField(max_length=200, required = False)
 
 class UserEditSerializer(serializers.Serializer):
 

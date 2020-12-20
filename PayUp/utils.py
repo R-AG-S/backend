@@ -22,3 +22,7 @@ class ApiErrorsMixin:
             return super().handle_exception(drf_exception)
 
         return super().handle_exception(exc)
+
+
+def ExceptionResponse(e):
+    return {"Error": type(e).__name__, "Message": str(e)}

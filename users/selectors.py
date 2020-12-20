@@ -54,7 +54,7 @@ def sign_in_with_email_and_password(email: str, password: str, return_secure_tok
 
 
 def firebase_refresh_token(refreshToken: str):
-    print('test', refreshToken)
+
     payload = json.dumps({
         "grant_type": "refresh_token",
         "refresh_token": refreshToken
@@ -63,7 +63,7 @@ def firebase_refresh_token(refreshToken: str):
     r = requests.post(token_refresh_url,
                       params = {"key": FIREBASE_WEB_API_KEY},
                       data = payload)
-    print(r)
+
     return r 
 
 def get_specific_details_of_user(user_id, field='cars'):
@@ -96,19 +96,20 @@ def get_display_details(user_id):
     if not user_ref.get().exists:
         raise Exception("USER_DOES_NOT_EXIST")  
     user_details = user_ref.get().to_dict()
-    try:
-        
-        return {
-            "displayname": user_details['displayname'],
-            "displaypic": user_details['displaypic'],
-            "cars": user_details['cars']
-        }
-    except KeyError:
+
+    if 'privacy' in user_details and user_details['privacy']:
         return {
             "displayname": "",
             "displaypic": "",
-            "message": "Please set A full name for this account."
+            "cars": [],
+            "message": "User has set their profile to private."
         }
+    return {
+        "displayname": user_details['displayname'],
+        "displaypic": user_details['displaypic'],
+        "cars": user_details['cars']
+    }
+
 
 def get_car_mileage_by_model(token_uid, car_model):
 

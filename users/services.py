@@ -87,6 +87,7 @@ def delete_car_of_user(token_uid, car_model):
     user_details = car_ref.get().to_dict()
     flag = 0
     for car in user_details['cars']:
+
         if car['car_model'] == car_model:
             user_details['cars'].remove(car)
             flag = 1
@@ -126,7 +127,8 @@ def initialise_user_table(uid, displayname="", displaypic=""):
         "cars": [],
         "address": [],  
         "displayname": displayname,
-        "displaypic": displaypic
+        "displaypic": displaypic,
+        "privacy": False
         # TODO: Add More fields when new features are added.
     }
     user_ref.set(user_data)
