@@ -8,7 +8,7 @@ from users.utils import get_token
 
 from .selectors import get_active_session_data
 from .serializers import (CreateActiveSessionSerializer,
-                          InteractActiveSessionSerializer,
+                          StartActiveSessionSerializer, LeaveActiveSessionSerializer,
                           EndSessionSerializer, TestSerializer)
 from .services import ( join_active_session, start_active_session, end_active_session, leave_active_session )
 
@@ -39,7 +39,7 @@ class StartActiveSession(GenericAPIView):
 
 class JoinActiveSession(GenericAPIView):
     
-    serializer_class = InteractActiveSessionSerializer
+    serializer_class = StartActiveSessionSerializer
 
     def post(self, request, *args, **kwargs):
         user_id = get_uid_from_token(get_token(request))
@@ -82,7 +82,7 @@ class GetActiveSessionData(GenericAPIView):
 
 class LeaveActiveSession(GenericAPIView):
     
-    serializer_class = InteractActiveSessionSerializer
+    serializer_class = LeaveActiveSessionSerializer
 
     def post(self, request, *args, **kwargs):
         user_id = get_uid_from_token(get_token(request))

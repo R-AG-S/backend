@@ -92,6 +92,7 @@ def leave_active_session(data, user_id):
     room_id = data['room_id']
     lat = data['lat']
     lng = data['lng']
+    distance = data['distance']
 
     active_room_ref = get_active_room_if_room_valid(room_id, user_id, must_exist=True)
     
@@ -103,7 +104,8 @@ def leave_active_session(data, user_id):
         user_id:
             {
                 'coordinates': GeoPoint(lat, lng),
-                'time': leave_time
+                'time': leave_time,
+                'distance': distance
             }   
     }
 
@@ -175,10 +177,9 @@ def end_active_session(data, user_id):
             parsed_data['final_coordinates'].longitude,
         ]
     
-
         # TODO:
         # active_session_end_notification(parsed_data)
-        # calculate_costs(parsed_data)
+        # parsed_data = cost_function(parsed_data)
 
         return {"SUCCESS": "ACTIVE_SESSION_ENDED", "SESSION_DETAILS": parsed_data}
     

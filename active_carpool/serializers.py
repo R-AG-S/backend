@@ -12,11 +12,18 @@ class CreateActiveSessionSerializer(serializers.Serializer):
     car = serializers.CharField(max_length=100)
 
 
-class InteractActiveSessionSerializer(serializers.Serializer):
+class StartActiveSessionSerializer(serializers.Serializer):
 
     room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
     lat = serializers.FloatField()
     lng = serializers.FloatField()
+
+class LeaveActiveSessionSerializer(serializers.Serializer):
+    room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
+    lat = serializers.FloatField()
+    lng = serializers.FloatField()
+    distance = serializers.FloatField(required=False, default = 0)
+
 
 class EndSessionSerializer(serializers.Serializer):
     room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
