@@ -10,6 +10,7 @@ class CreateActiveSessionSerializer(serializers.Serializer):
     lat = serializers.FloatField()
     lng = serializers.FloatField()
     car = serializers.CharField(max_length=100)
+    mileage = serializers.FloatField(required=False, default = 15)
 
 
 class StartActiveSessionSerializer(serializers.Serializer):
@@ -30,8 +31,12 @@ class EndSessionSerializer(serializers.Serializer):
     lat = serializers.FloatField()
     lng = serializers.FloatField()
     distance = serializers.FloatField()
+    
+    wear_and_tear_factor = serializers.FloatField(required=False, default=0.2)
+    driver_discount = serializers.FloatField(required=False, default=0.05)
 
     cancel_session = serializers.BooleanField(required=False, default=False)
+    debug = serializers.BooleanField(default=False, required=False)
 
 class TestSerializer(serializers.Serializer):
     room_id = serializers.CharField(max_length=ROOM_ID_LENGTH)
@@ -49,7 +54,8 @@ def detail_parser(detail_list):
                         itemvalue['coordinates'].latitude,
                         itemvalue['coordinates'].longitude
                     ],
-                'time': itemvalue['time']
+                'time': itemvalue['time'],
+                'distance': itemvalue['distance']
             }
         })
     return data

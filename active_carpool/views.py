@@ -124,9 +124,6 @@ class EndActiveSession(GenericAPIView):
             return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_401_UNAUTHORIZED)
 
 
-
-
-
 class TestView(GenericAPIView):
     
     serializer_class = RoomIDSerializer

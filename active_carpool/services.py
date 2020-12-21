@@ -4,6 +4,7 @@ from PayUp.firebase import GeoPoint, db
 
 from .models import ACTIVE_CARPOOL_TABLE, INACTIVE_SESSIONS_TABLE, init_inactive_table
 from .serializers import active_session_parser
+from .cost_function import cost_function_linear_version1
 
 
 def get_active_room_if_room_valid(room_id, user_id, active_check=False, must_exist=False):
@@ -30,13 +31,17 @@ def start_active_session(data, user_id):
     lat = data['lat']
     lng = data['lng']
     car = data['car']
+    mileage = data['mileage']
+
     active_room_ref = get_active_room_if_room_valid(room_id, user_id, active_check=True)
+
     start_time = timezone.now() 
     set_data = {
 
     'driver': user_id,
     'initial_coordinates': GeoPoint(lat, lng),
     'car': car,
+    'mileage': mileage,
     'start_time': start_time,
     'passengers_in_car': [],
     'dropped_of_passengers': [],
@@ -128,6 +133,11 @@ def end_active_session(data, user_id):
     lat = data['lat']
     lng = data['lng']
     distance = data['distance']
+    wear_and_tear_factor = data['wear_and_tear_factor']
+    driver_discount= data['driver_discount']
+
+    debug = data['debug']
+    print ("1")
 
     active_room_ref = get_active_room_if_room_valid(room_id, user_id, must_exist=True)
     end_time = timezone.now() 
@@ -149,10 +159,11 @@ def end_active_session(data, user_id):
             session_data['passenger_dropoff_details'].append({
                     passenger:{
                             'coordinates': GeoPoint(lat, lng),
-                            'time': end_time
+                            'time': end_time,
+                            'distance': distance
                         } 
             })
-
+        print("3")
 
         session_data.pop('passengers_in_car')
         session_data.pop('dropped_of_passengers')
@@ -167,9 +178,11 @@ def end_active_session(data, user_id):
         inactive_session['last_session'] = end_time
 
 
-        inactive_ref.set(inactive_session)
-        active_room_ref.delete()
-
+        
+        if not debug:
+            active_room_ref.delete()    # Delete Active Session
+            inactive_ref.set(inactive_session)
+        print("4")
         #active_session_end_notification(session_data)
         parsed_data = active_session_parser(session_data)
         parsed_data['final_coordinates'] = [
@@ -179,8 +192,10 @@ def end_active_session(data, user_id):
     
         # TODO:
         # active_session_end_notification(parsed_data)
-        # parsed_data = cost_function(parsed_data)
-
+        room_fuel_cost = db.collection(Carpool_Table).document(room_id).get().to_dict()['petrol_price']
+        print("5")
+        parsed_data = cost_function_linear_version1(parsed_data, room_fuel_cost, wear_and_tear_factor, driver_discount)
+        print('6')
         return {"SUCCESS": "ACTIVE_SESSION_ENDED", "SESSION_DETAILS": parsed_data}
     
     else:
