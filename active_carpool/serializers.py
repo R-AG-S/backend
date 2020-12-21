@@ -48,16 +48,27 @@ def detail_parser(detail_list):
     for item in detail_list:
         itemkey = list(item.keys())[0]
         itemvalue = list(item.values())[0]
-        data.append({
-            itemkey: {
-                'coordinates': [
-                        itemvalue['coordinates'].latitude,
-                        itemvalue['coordinates'].longitude
-                    ],
-                'time': itemvalue['time'],
-                'distance': itemvalue['distance']
-            }
-        })
+        if 'distance' in itemvalue:
+            data.append({
+                itemkey: {
+                    'coordinates': [
+                            itemvalue['coordinates'].latitude,
+                            itemvalue['coordinates'].longitude
+                        ],
+                    'time': itemvalue['time'],
+                    'distance': itemvalue['distance']
+                }
+            })
+        else:
+            data.append({
+                itemkey: {
+                    'coordinates': [
+                            itemvalue['coordinates'].latitude,
+                            itemvalue['coordinates'].longitude
+                        ],
+                    'time': itemvalue['time']
+                }
+            })
     return data
 
 

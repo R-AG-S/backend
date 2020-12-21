@@ -15,11 +15,11 @@ def cost_function_linear_version1(session_details, petrol_price, wear_and_tear_f
     fuel_cost = (driver_dist/mileage)*petrol_price #Fuel cost
     
     total_cost = fuel_cost + (wear_and_tear_factor*fuel_cost) #Fuel + Wear and Tear
-    print(1)
+    
     driver_cost = ((1-(driver_discount)) * driver_dist/total_distance)*total_cost 
-    print(2)
+    
     dr_discnt = driver_discount * driver_cost / passenger_count
-    print(3)
+  
     session_details['cost_split'] = []
     for user in session_details['passenger_dropoff_details']:
         itemkey = list(user.keys())[0]
