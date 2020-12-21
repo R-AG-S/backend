@@ -125,14 +125,14 @@ def add_device_token_to_user_table(reg_token, token_uid):
 
 # Public Functions
 
-def initialise_user_table(uid, displayname="", displaypic=""):
+def initialise_user_table(uid, displayname=None, displaypic="https://firebasestorage.googleapis.com/v0/b/inout-776aa.appspot.com/o/avatar-png%2F07.png?alt=media&token=5963605e-b4e9-488c-be68-1f75c466fd8b"):
     user_ref = db.collection('User-Details').document(uid)
     user_data = {
         "rooms": [],
         "rooms_created": [],
         "cars": [],
         "address": [],  
-        "displayname": displayname,
+        "displayname": displayname or uid,
         "displaypic": displaypic,
         "privacy": False
         # TODO: Add More fields when new features are added.
