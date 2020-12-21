@@ -80,11 +80,11 @@ def active_session_parser(session_data):
     try:
         
 
-        parsed_data['initial_coordinates'] = [
-            session_data['initial_coordinates'].latitude,
-            session_data['initial_coordinates'].longitude
-        ]
-
+        if 'final_coordinates' in session_data:
+            parsed_data['final_coordinates'] = [
+                session_data['final_coordinates'].latitude,
+                session_data['final_coordinates'].longitude,
+            ]
         if 'passenger_dropoff_details' in session_data:
             parsed_data['initial_coordinates'] = [
                 session_data['initial_coordinates'].latitude,

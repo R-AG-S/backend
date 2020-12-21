@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from users.selectors import get_uid_from_token
 from users.utils import get_token
 
-from .selectors import get_active_session_data
+from .selectors import get_active_session_data, get_history_data
 from .serializers import (CreateActiveSessionSerializer,
                           StartActiveSessionSerializer, LeaveActiveSessionSerializer,
                           EndSessionSerializer, TestSerializer)
@@ -141,3 +141,25 @@ class TestView(GenericAPIView):
         else:
             return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
+
+class GetDriveHistory(GenericAPIView):
+    
+    serializer_class = RoomIDSerializer
+
+    def post(self, request, *args, **kwargs):
+        user_id = get_uid_from_token(get_token(request))
+        if user_id:
+            serialized = self.serializer_class(data=request.data)
+            if serialized.is_valid():
+                try:
+                    data = serialized.validated_data
+                    r = get_history_data(data['room_id'], user_id)
+                    return Response(r, status=status.HTTP_200_OK)
+                except Exception as e:
+                    return Response({'ERROR': type(e).__name__.upper(), "MESSAGE": str(e)}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                return Response(serialized.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        else:
+            return Response(POST_REQUEST_ERRORS['INVALID_TOKEN'], status=status.HTTP_401_UNAUTHORIZED)

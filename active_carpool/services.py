@@ -23,6 +23,21 @@ def get_active_room_if_room_valid(room_id, user_id, active_check=False, must_exi
     return active_room_ref
 
 
+def get_history_if_room_valid(room_id, user_id, active_check=False, must_exist=False):
+    carpool_ref = db.collection(Carpool_Table).document(room_id).get()
+    if not carpool_ref.exists:
+        raise Exception("ROOM_DOES_NOT_EXIST")
+    if user_id not in carpool_ref.to_dict()['members']:
+        raise Exception("FORBIDDEN_USER_NOT_PART_OF_THE_ROOM")
+
+    history_ref = db.collection(INACTIVE_SESSIONS_TABLE).document(room_id)
+    if active_check and history_ref.get().exists:
+        raise Exception("ROOM_ALREADY_HAS_HISTORY") 
+    if must_exist and not(history_ref.get().exists):
+        raise Exception("ROOM_DOES_NOT_HAVE_HISTORY")  
+
+    return history_ref
+
 
 def start_active_session(data, user_id):
     
@@ -137,7 +152,7 @@ def end_active_session(data, user_id):
     driver_discount= data['driver_discount']
 
     debug = data['debug']
-    print ("1")
+    
 
     active_room_ref = get_active_room_if_room_valid(room_id, user_id, must_exist=True)
     end_time = timezone.now() 
@@ -163,7 +178,7 @@ def end_active_session(data, user_id):
                             'distance': distance
                         } 
             })
-        print("3")
+       
 
         session_data.pop('passengers_in_car')
         session_data.pop('dropped_of_passengers')
@@ -173,29 +188,28 @@ def end_active_session(data, user_id):
         else: 
             inactive_session = init_inactive_table()
 
-        inactive_session['session_count'] = str(int(inactive_session['session_count']) + 1)
-        inactive_session['history'].append(session_data)
-        inactive_session['last_session'] = end_time
+
 
 
         
-        if not debug:
-            active_room_ref.delete()    # Delete Active Session
-            inactive_ref.set(inactive_session)
-        print("4")
+
+      
         #active_session_end_notification(session_data)
         parsed_data = active_session_parser(session_data)
-        parsed_data['final_coordinates'] = [
-            parsed_data['final_coordinates'].latitude,
-            parsed_data['final_coordinates'].longitude,
-        ]
     
         # TODO:
         # active_session_end_notification(parsed_data)
         room_fuel_cost = db.collection(Carpool_Table).document(room_id).get().to_dict()['petrol_price']
-        print("5")
+        
         parsed_data = cost_function_linear_version1(parsed_data, room_fuel_cost, wear_and_tear_factor, driver_discount)
-        print('6')
+        if not debug:
+            active_room_ref.delete()    # Delete Active Session
+            inactive_session['session_count'] = str(int(inactive_session['session_count']) + 1)
+            inactive_session['history'].append(parsed_data)
+            inactive_session['last_session'] = end_time
+            #add_to_cost_split_global(parsed_data['cost_split'])
+            inactive_ref.set(inactive_session)
+
         return {"SUCCESS": "ACTIVE_SESSION_ENDED", "SESSION_DETAILS": parsed_data}
     
     else:
